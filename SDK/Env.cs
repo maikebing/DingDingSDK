@@ -9,17 +9,17 @@ namespace DingDingSDK
     {
         public const String OAPI_HOST = "https://oapi.dingtalk.com";
 
-        public const String CORP_ID = "136001";
-        public const String SECRET = "6ATEWBfiaTUZBFG5djt2JN-XtLoDcLYPXQ9TES658eM2CWZEoqrFuxGGDMcAQXMd";
+        public static String CORP_ID { get; set; }
+        public static String SECRET { get; set; }
 
-        public static String suiteTicket;
-        public static String authCode;
+        public static String suiteTicket { get; set; }
+        public static String authCode { get; set; }
 
-        public const String CREATE_SUITE_KEY = "suitenr0azwp8exmqqsau";
-        public const String SUITE_KEY = "suitenr0azwp8exmqqsau";
-        public const String SUITE_SECRET = "6ATEWBfiaTUZBFG5djt2JN-XtLoDcLYPXQ9TES658eM2CWZEoqrFuxGGDMcAQXMd";
-        public const String TOKEN = "freefnc";
-        public const String ENCODING_AES_KEY = "bsvhcqfd6lrd52rlj9t9n6gdui97d3x7b05k3ztam05";
+        public static String CREATE_SUITE_KEY { get; set; }
+        public static String SUITE_KEY { get; set; }
+        public static String SUITE_SECRET { get; set; }
+        public static String TOKEN { get; set; }
+        public static String ENCODING_AES_KEY { get; set; }
 
         public static string suite_access_token = "";//套件token
         public static string permanent_code = "";//永久授权码

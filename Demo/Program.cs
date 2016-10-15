@@ -1,25 +1,41 @@
-﻿using DingDingSDK.auth;
+﻿using DingDingSDK;
+using DingDingSDK.auth;
 using DingDingSDK.department;
 using DingDingSDK.media;
 using DingDingSDK.message;
 using DingDingSDK.user;
+using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using static DingDingSDK.media.MediaHelper;
 
-namespace DingDingSDK
+namespace DingDingDemo
 {
-    public class Demo
+    class Program
     {
-        public static void main(String[] args)
+        static void Main(string[] args)
         {
-
+            
+    
             try
             {
+              
+
+                //请改写你的配置
+                Vars.AGENT_ID = "";
+                Env.CORP_ID = "";
+                Env.SECRET = "";
+                Env.CREATE_SUITE_KEY = "";
+                Env.SUITE_KEY = "";
+                Env.SUITE_SECRET = "";
+                Env.TOKEN = "";
+                Env.ENCODING_AES_KEY = "";
                 // 获取access token
-                String accessToken = AuthHelper.getAccessToken();
+                string accessToken = AuthHelper.getAccessToken();
                 log("成功获取access token: ", accessToken);
 
                 // 获取jsapi ticket
@@ -33,22 +49,34 @@ namespace DingDingSDK
                 String signature = AuthHelper.sign(ticket, nonceStr, timeStamp, url);
                 log("成功签名: ", signature);
 
-                //创建部门
-                String name = "TestDept.16";
-                String parentId = "1";
-                String order = "1";
-                long departmentId = DepartmentHelper.createDepartment(accessToken,
-                        name, parentId, order);
-                log("成功创建部门", name, " 部门id=", departmentId);
-
                 //获取部门列表
                 List<Department> list = DepartmentHelper.listDepartments(accessToken);
                 log("成功获取部门列表", list);
 
+                //创建部门
+                String name = "TestDept.16";
+                String parentId = "1";
+                String order = "1";
+                var depttmp = list.Find(dp => dp.name == name);
+                if (depttmp != null)
+                {
+                    DepartmentHelper.deleteDepartment(accessToken, long.Parse(depttmp.id));
+                }
+                long departmentId = DepartmentHelper.createDepartment(accessToken,
+                        name, parentId, order);
+                log("成功创建部门", name, " 部门id=", departmentId);
+
+
                 //更新部门
                 DepartmentHelper.updateDepartment(accessToken, name, parentId, order, departmentId);
                 log("成功更新部门", " 部门id=", departmentId);
-
+                var usrlist=UserHelper.getDepartmentUser(accessToken, departmentId);
+                var userf = usrlist.Find(usr => usr.userid == "id_yuhuan");
+                if (userf!=null )
+                {
+                    UserHelper.deleteUser(accessToken, userf.userid);
+                    log("用户删除成功", name, " 用户ID=", userf.userid);
+                }
                 //创建成员
                 User user = new User("id_yuhuan", "name_yuhuan");
                 user.email = "yuhuan@abc.com";
@@ -59,13 +87,13 @@ namespace DingDingSDK
                 log("成功创建成员", "成员信息=", user);
 
                 //上传图片
-                FileInfo file = new FileInfo("/Users/liqiao/Desktop/icon.jpg");
+                FileInfo file = new FileInfo("1111.PNG");
                 MediaHelper.MediaUploadResult uploadResult =
                         MediaHelper.upload(accessToken, MediaHelper.TYPE_IMAGE, file);
                 log("成功上传图片", uploadResult);
 
                 //下载图片
-                String fileDir = "/Users/liqiao/Desktop/";
+                String fileDir = "1111.PNG";
                 MediaHelper.download(accessToken, uploadResult.media_id, fileDir);
                 log("成功下载图片");
 
@@ -100,11 +128,15 @@ namespace DingDingSDK
                 body.file_found = "3";
                 body.author = "识器";
                 oaMessage.body = body;
-
+                
                 //发送微应用消息
                 String toUsers = Vars.TO_USER;
-                String toParties = Vars.TO_PARTY;
+                String toParties = ""; // Vars.TO_PARTY;
                 String agentId = Vars.AGENT_ID;
+                foreach (var item in list)
+                {
+                    toParties += item.id + "|";
+                }
                 LightAppMessageDelivery lightAppMessageDelivery =
                         new LightAppMessageDelivery(toUsers, toParties, agentId);
 
@@ -185,23 +217,22 @@ namespace DingDingSDK
             }
             catch (OApiException e)
             {
-                //e.printStackTrace();
+            
+                e.printStackTrace();
             }
         }
 
 
-        private static void log(params Object[]  msgs)
+        private static void log(params Object[] msgs)
         {
-            LogHelper.AddLog(string.Join("\r\n________\r\n", msgs.Select(x => x.ToString()).ToList()), typeof(Demo));
-            //StringBuilder sb = new StringBuilder();
-            //for (Object o : msgs)
-            //{
-            //    if (o != null)
-            //    {
-            //        sb.append(o.toString());
-            //    }
-            //}
-            //System.out.println(sb.toString());
+            LogHelper.AddLog(string.Join("\r\n________\r\n", msgs.Select(x => x.ToString()).ToList()), typeof(Program));
+            StringBuilder sb = new StringBuilder();
+            foreach (var item in msgs)
+            {
+                sb.Append(sb);
+            }
+
+            Console.WriteLine(sb.ToString());
         }
     }
 }

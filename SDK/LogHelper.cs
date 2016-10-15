@@ -13,7 +13,7 @@ namespace DingDingSDK
 
         public static void AddLog(string mes, Type t)
         {
-            //log4net.LogManager.GetLogger(t).Info(mes);
+            log4net.LogManager.GetLogger(t).Info(mes);
         }
 
         public static void AddLog2(int index,string mes, Type t)

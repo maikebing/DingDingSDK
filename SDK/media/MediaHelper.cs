@@ -1,5 +1,6 @@
 ﻿using DingDingSDK.utils;
 using MongoDB.Bson;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,22 +16,25 @@ namespace DingDingSDK.media
         public static readonly String TYPE_VIDEO = "video";
         public static readonly String TYPE_FILE = "file";
 
-
+    
         public class MediaUploadResult
         {
-            public String type
+            public int errcode { get; set; }
+            public string errmsg { get; set; }
+            public string type
             {
                 get; set;
             }
-            public String media_id
+            public string media_id
             {
                 get; set;
             }
-            public String created_at
+            public string created_at
             {
                 get; set;
             }
         }
+    
 
 
         public static MediaUploadResult upload(String accessToken, String type, FileInfo file)
@@ -41,7 +45,9 @@ namespace DingDingSDK.media
             if (!response.Contains("type") || !response.Contains("media_id") ||
                     response.Contains("created_at"))
             {
-                return Newtonsoft.Json.JsonConvert.DeserializeObject<MediaUploadResult>(response.ToString());
+                response.Set("created_at", response.GetValue("created_at").AsInt64.ToString());
+
+                return Newtonsoft.Json.JsonConvert.DeserializeObject<MediaUploadResult>(response.ToString() );
             }
             else
             {
