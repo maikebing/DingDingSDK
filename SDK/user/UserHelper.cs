@@ -57,7 +57,10 @@ namespace DingDingSDK.user
             HttpHelper.httpPost(url, args);
         }
 
-
+        public static List<User> getDepartmentUser(String accessToken, string department_id)
+        {
+            return getDepartmentUser(accessToken, long.Parse(department_id));
+        }
         //获取部门成员
         public static List<User> getDepartmentUser(String accessToken, long department_id)
         {
@@ -93,6 +96,11 @@ namespace DingDingSDK.user
                 List<User> list = new List<User>();
                 for (int i = 0; i < arr.Count; i++)
                 {
+                    var bd = arr[i].ToBsonDocument();
+                    if (bd.Contains("order"))
+                    {
+                        bd.Set("order", bd.GetValue("order").AsInt64.ToString());
+                    }
                     list.Add(Newtonsoft.Json.JsonConvert.DeserializeObject<User>(arr[i].ToString()));
                 }
                 return list;
